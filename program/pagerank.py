@@ -58,12 +58,11 @@ def transition_model(corpus, page, damping_factor):
     # Caso contrário, aplicar o modelo de transição com amortecimento
     for p in corpus:
         distribution[p] = (1 - damping_factor) / number_corpus
-        print("oba")
         if p in linked_pages:
             distribution[p] += damping_factor / number_corpus
+            
+    return distribution
     
-    print (distribution)
-
 
 
 def sample_pagerank(corpus, damping_factor, n):
@@ -85,13 +84,11 @@ def sample_pagerank(corpus, damping_factor, n):
     for _ in range(n):
         pagerank[current_page] += 1
         model = transition_model(corpus, current_page, damping_factor)
-        print(model)
         current_page = random.choices(list(model.keys()), weights=model.values(), k=1)[0]
         
     # Normalizar para garantir que a soma dos PageRanks seja 1
     total_samples = sum(pagerank.values())
     pagerank = {page: rank / total_samples for page, rank in pagerank.items()}
-
     return pagerank
     
  
