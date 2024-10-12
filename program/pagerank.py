@@ -103,6 +103,29 @@ def iterate_pagerank(corpus, damping_factor):
     Retorna um dicionário onde as chaves são nomes de páginas e os valores são seus valores estimados de PageRank (um valor entre 0 e 1). Todos os valores de PageRank devem somar 1.
     """
 
+    number_corpus = len(corpus)
+    pagerank = dict.fromkeys(corpus, 1 / number_corpus)
+    new_pagerank = pagerank.copy()
+    epsilon = 1e-6  # Pequeno valor para verificar convergência
+
+    while True:
+        for page in corpus:
+            total = (1 - damping_factor) / number_corpus
+            for other_page in corpus:
+                if page in corpus[other_page]: # Se a pagina atual estiver linkada com outra pagina
+                    total += damping_factor * pagerank[other_page] / len(corpus[other_page])
+                elif len(corpus[other_page]) == 0:  # Caso de "dangling pages" (páginas sem links)
+                    total += damping_factor * pagerank[other_page] / number_corpus
+            new_pagerank[page] = total
+
+        # Verificar se os valores de PageRank mudaram abaixo de epsilon (convergência)
+        if all(abs(new_pagerank[page] - pagerank[page]) < epsilon for page in pagerank):
+            break
+
+        pagerank = new_pagerank.copy()
+
+    return pagerank
+
 
     raise NotImplementedError
 
